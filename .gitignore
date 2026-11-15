@@ -1,0 +1,10 @@
+crudvenv/
+venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+.env
+.vscode/
+media/
+.DS_Store
+Thumbs.db
