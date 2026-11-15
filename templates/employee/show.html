@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block breadcrumb %}Overview{% endblock %}
+{% block content %}
+<section class="page-heading overview-heading">
+    <div><p class="eyebrow">YOUR WORKSPACE</p><h1>Employee overview</h1><p class="page-lead">A clear view of your people directory and team records.</p></div>
+    <a class="button button-primary" href="{% url 'createEmp' %}"><span class="button-plus" aria-hidden="true">＋</span> Add employee</a>
+</section>
+<section class="stats-grid" aria-label="Employee statistics">
+    <article class="stat-card">
+        <div class="stat-icon stat-icon-blue">♙</div><div class="stat-copy"><span>Total employees</span><strong>{{ employee_count }}</strong><small>In your directory</small></div>
+        <span class="stat-decoration">01</span>
+    </article>
+    <article class="stat-card">
+        <div class="stat-icon stat-icon-teal">⌕</div><div class="stat-copy"><span>Directory status</span><strong class="status-value"><i></i> Up to date</strong><small>Records are ready to manage</small></div>
+        <span class="stat-decoration">02</span>
+    </article>
+</section>
+<section class="directory-panel">
+    <div class="directory-header">
+        <div><p class="eyebrow">PEOPLE DIRECTORY</p><h2>All employees <span class="count-pill">{{ result_count }}</span></h2><p class="panel-subtitle">Search, view, and manage employee contact details.</p></div>
+        <form method="get" action="{% url 'show' %}" class="search-form" role="search">
+            <label class="sr-only" for="employee-search">Search employees</label>
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="employee-search" type="search" name="q" value="{{ search_query }}" placeholder="Search employees..." autocomplete="off">
+            {% if search_query %}<a class="clear-search" href="{% url 'show' %}" aria-label="Clear search">×</a>{% endif %}
+            <button type="submit" class="search-submit">Search</button>
+        </form>
+    </div>
+    <div class="table-wrap">
+        <table class="employee-table">
+            <thead><tr><th>EMPLOYEE</th><th>EMPLOYEE ID</th><th>WORK EMAIL</th><th>PHONE</th><th><span class="sr-only">Actions</span></th></tr></thead>
+            <tbody>
+                {% for emp in employees %}
+                <tr>
+                    <td><div class="employee-person"><span class="employee-avatar avatar-tone-{{ forloop.counter0|divisibleby:4|yesno:'1,2' }}">{{ emp.ename|first|upper }}</span><div><strong>{{ emp.ename }}</strong><small>Team member</small></div></div></td>
+                    <td><span class="employee-id">{{ emp.eid }}</span></td>
+                    <td><a class="table-email" href="mailto:{{ emp.eemail }}">{{ emp.eemail }}</a></td>
+                    <td class="phone-cell">{{ emp.econtact }}</td>
+                    <td><div class="row-actions"><a class="action-link" href="{% url 'edit' emp.id %}">Edit</a><form method="post" action="{% url 'destroy' emp.id %}" onsubmit="return confirm('Delete {{ emp.ename|escapejs }} from the employee directory?');">{% csrf_token %}<button class="action-link action-delete" type="submit">Delete</button></form></div></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5"><div class="empty-state"><span class="empty-icon">⌕</span><h3>{% if search_query %}No matching employees{% else %}Your directory is ready{% endif %}</h3><p>{% if search_query %}Try another name, employee ID, email, or phone number.{% else %}Add your first employee to start building your directory.{% endif %}</p>{% if not search_query %}<a class="button button-primary" href="{% url 'createEmp' %}">Add first employee</a>{% endif %}</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pagination" aria-label="Employee list pages">
+        <span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ result_count }}</span>
+        <div class="pagination-actions">
+            {% if page_obj.has_previous %}<a href="?q={{ search_query|urlencode }}&page={{ page_obj.previous_page_number }}">← Previous</a>{% else %}<span class="disabled">← Previous</span>{% endif %}
+            <span class="page-indicator">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}<a href="?q={{ search_query|urlencode }}&page={{ page_obj.next_page_number }}">Next →</a>{% else %}<span class="disabled">Next →</span>{% endif %}
+        </div>
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

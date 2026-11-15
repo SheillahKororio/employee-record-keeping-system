@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#12243a">
+    <title>Sign in · PeopleOS</title>
+    <link rel="stylesheet" href="{% static 'myapp/css/style.css' %}">
+</head>
+<body class="auth-page">
+    <main class="auth-layout">
+        <section class="auth-brand-panel">
+            <a class="brand auth-brand" href="{% url 'login' %}"><span class="brand-mark">P</span><span>people<span class="brand-light">OS</span><small>PEOPLE OPERATIONS</small></span></a>
+            <div class="auth-message"><p class="eyebrow">BETTER PEOPLE OPERATIONS</p><h1>Your team,<br>in good hands.</h1><p>A calm, clear workspace to manage your employee directory and keep your team information in one place.</p><div class="auth-feature"><span>✓</span> Thoughtful tools for your people</div><div class="auth-feature"><span>✓</span> Secure, organized employee records</div></div>
+            <div class="auth-panel-footer">PEOPLEOS <span>·</span> EMPLOYEE WORKSPACE</div>
+        </section>
+        <section class="auth-form-panel">
+            <div class="auth-form-content">
+                <div class="mobile-brand"><span class="brand-mark">P</span><span>people<span class="brand-light">OS</span></span></div>
+                <p class="eyebrow">WELCOME BACK</p><h2>Sign in to your account</h2><p class="auth-subtitle">Enter your staff credentials to continue.</p>
+                {% if form.errors %}<div class="auth-error" role="alert">Your username or password was incorrect. Please try again.</div>{% endif %}
+                {% if next and user.is_authenticated %}<div class="auth-error" role="alert">Your account does not have access to that page.</div>{% endif %}
+                <form method="post" class="auth-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <div class="field-wrap"><label for="{{ form.username.id_for_label }}">Username</label><input class="form-control" type="text" name="username" id="{{ form.username.id_for_label }}" autocomplete="username" autofocus required></div>
+                    <div class="field-wrap"><label for="{{ form.password.id_for_label }}">Password</label><input class="form-control" type="password" name="password" id="{{ form.password.id_for_label }}" autocomplete="current-password" required></div>
+                    <button class="button button-primary auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+                </form>
+                <p class="auth-footnote">Staff accounts are managed by your account administrator.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
